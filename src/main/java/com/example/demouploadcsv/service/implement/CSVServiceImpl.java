@@ -23,9 +23,11 @@ public class CSVServiceImpl implements CSVService {
     private TutorialRepository tutorialRepository;
 
     public void save(MultipartFile file) {
+        CSVHelper csvHelper = new CSVHelper();
         try {
-            List<Tutorial> tutorials = CSVHelper.csvToTutorial(file.getInputStream());
-            tutorialRepository.saveAll(tutorials);
+//            List<Tutorial> tutorials = CSVHelper.csvToTutorial(file.getInputStream());
+            List<Tutorial> ts = csvHelper.testList(file.getInputStream(), Tutorial.class);
+//            tutorialRepository.saveAll(tutorials);
         } catch (IOException e) {
             log.error("Fail to store csv data:", e.getMessage());
         }

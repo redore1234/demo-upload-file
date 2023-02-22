@@ -9,6 +9,8 @@ import org.apache.commons.csv.CSVRecord;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,7 +20,7 @@ import java.util.List;
  * The type Csv helper.
  */
 @Slf4j
-public class CSVHelper {
+public class CSVHelper<T> {
     /**
      * The constant TYPE.
      */
@@ -61,25 +63,54 @@ public class CSVHelper {
      * @param inputStream the input stream
      * @return the list
      */
-    public static List<Tutorial> csvToTutorial(InputStream inputStream) {
+//    public static List<Tutorial> csvToTutorial(InputStream inputStream) {
+//        try {
+//            BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
+//            CSVParser csvParser = new CSVParser(br, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
+//            Iterable<CSVRecord> csvRecords = csvParser.getRecords();
+//            List<Tutorial> tutorials = new ArrayList<>();
+//            for (CSVRecord csvRecord : csvRecords) {
+//                Tutorial tutorial = new Tutorial(
+//                        csvRecord.get(csvHeader.Title),
+//                        csvRecord.get(csvHeader.Description),
+//                        Boolean.parseBoolean(csvRecord.get(csvHeader.Published))
+//                );
+//                tutorials.add(tutorial);
+//            }
+//            return tutorials;
+//        } catch (IOException e) {
+//            log.error("Fail to parse CSV file: ", e.getMessage());
+//            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
+//        }
+//    }
+
+    public List<T> testList(InputStream inputStream, Class<T> myGeneric) {
         try {
             BufferedReader br = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
             CSVParser csvParser = new CSVParser(br, CSVFormat.DEFAULT.withFirstRecordAsHeader().withIgnoreHeaderCase().withTrim());
-            List<Tutorial> tutorials = new ArrayList<>();
             Iterable<CSVRecord> csvRecords = csvParser.getRecords();
 
+            List<T> ts = new ArrayList<T>();
+            // Get class
+            T t = myGeneric.getDeclaredConstructor().newInstance();
+            // Get field list in the class
+            Field[] fields = t.getClass().getDeclaredFields();
             for (CSVRecord csvRecord : csvRecords) {
-                Tutorial tutorial = new Tutorial(
-                        csvRecord.get(csvHeader.Title),
-                        csvRecord.get(csvHeader.Description),
-                        Boolean.parseBoolean(csvRecord.get(csvHeader.Published))
-                );
-                tutorials.add(tutorial);
+                for (Field field : fields) {
+
+                }
             }
-            return tutorials;
+            return ts;
         } catch (IOException e) {
-            log.error("Fail to parse CSV file: ", e.getMessage());
-            throw new RuntimeException("fail to parse CSV file: " + e.getMessage());
+            throw new RuntimeException(e);
+        } catch (InstantiationException e) {
+            throw new RuntimeException(e);
+        } catch (IllegalAccessException e) {
+            throw new RuntimeException(e);
+        } catch (InvocationTargetException e) {
+            throw new RuntimeException(e);
+        } catch (NoSuchMethodException e) {
+            throw new RuntimeException(e);
         }
     }
 
